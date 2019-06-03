@@ -18,9 +18,9 @@ if (Meteor.isServer) {
         this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         this.response.end(JSON.stringify(res));
     })
-    Router.route('/post/:text', {where: 'server'})
+    Router.route('/post', {where: 'server'})
     .post(function(){
-        var params = this.params; // { _id: "5" }
+        var params = this.params.query; // { _id: "5" }
         var id = params.text; // "5"
         var res = Tasks.insert({ text: id,
         createdAt: new Date()})
