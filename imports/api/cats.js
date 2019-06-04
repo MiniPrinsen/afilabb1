@@ -22,6 +22,15 @@ if (Meteor.isServer) {
     Router.route('/cats',{where: 'server'})
         .get(function(){
             var response = Cats.find().fetch();
+
+            // Races.insert({
+            //     race: "Siamese"
+            // })
+
+            // Colors.insert({
+            //     color: "White"
+            // })
+
             this.response.setHeader('Content-Type', 'application/json');
             this.response.end(JSON.stringify(response));
         })
@@ -33,27 +42,48 @@ if (Meteor.isServer) {
                 response = {
                     "error": true,
                     "messege" : "invalid data"
-                };
+                }
             } else {
+                var race = Races.findOne({race : this.request.body.race});
+                var color = Colors.findOne({color : this.request.body.color});
 
-                var color = Colors.findOne({color: this.request.body.color})
-                var race = Races.findOne({race: this.request.body.race})
-                console.log("kattens färg: ", color._id);
-                console.log("kattens ras: ", race._id);
-        
-                Cats.insert({
-                    name: this.request.body.name,
-                    race: race._id,
-                    color: color._id,
-                    createdAt: this.request.body.createdAt,
-                })
-                // Cats.insert({
-                //     name: this.request.body.name,
-                //     race: this.request.body.race
-                // });
-                response = {
-                    "error" : false,
-                    "message" : "Cat added."
+                console.log("Name: ", this.request.body.name)
+                if(race !== undefined && color !== undefined) {
+                    response = {
+                        race,
+                        color
+                    }
+
+                    Cats.insert({
+                        name: this.request.body.name,
+                        race: race._id,
+                        color: color._id,
+                    })
+                    response = {
+                        "error" : false,
+                        "message" : "Cat added."
+                    }
+                }
+                else {
+                    if(race == undefined && color == undefined) {
+                        response = {
+                            "error" : true,
+                            "message" : "Race and Color not found."
+                        }
+                    }
+                    else if(race == undefined) {
+                        response = {
+                            "error" : true,
+                            "message" : "Race not found."
+                        }
+                    }
+                   else {
+                        response = {
+                            "error" : true,
+                            "message" : "Color not found."
+                        }
+                    }
+                    
                 }
             }
             this.response.setHeader('Content-Type', 'application/json');
@@ -63,7 +93,6 @@ if (Meteor.isServer) {
     Router.route('/cats/:id', {where: 'server'})
 
         //GET /cats/:id - returns specific records
-
         .get(function(){
             var response;
             if(this.params.id !== undefined) {
