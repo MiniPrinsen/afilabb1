@@ -15,6 +15,7 @@ class App extends Component {
 
         catData: {
             catSearch: '',
+            cat_id: '',
             cat_name: '',
             cat_race: '',
             cat_color: '',
@@ -29,21 +30,6 @@ class App extends Component {
          
          
         // };
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-     
-        // Find the text field via the React ref
-        const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
-     
-        Cats.insert({
-          text,
-          createdAt: new Date(), // current time
-        });
-     
-        // Clear form
-        ReactDOM.findDOMNode(this.refs.textInput).value = '';
     }
 
     handleInputChange = (form, event) => {
@@ -61,7 +47,7 @@ class App extends Component {
 
        if(race !== undefined) {
     //    console.log("Rasens id: ", race._id);
-        fetch(`http://localhost:3000/cats/getrace/${race._id}`, {
+        fetch(`http://localhost:3004/cats/getrace/${race._id}`, {
             method: 'GET',
             credentials: 'include',
         })
@@ -74,6 +60,7 @@ class App extends Component {
                     showTable: true,
 
                     catData: {
+                        cat_id: cat._id,
                         cat_name: cat.name,
                         cat_color: cat.color,
                         cat_race: cat.race,
@@ -105,8 +92,7 @@ class App extends Component {
     renderCats = () => {
         return this.props.cats.map((cat) => (
             <Cat key={cat._id} cat={cat}/>
-        ));
-        
+        ));   
     }
     
     render() {
