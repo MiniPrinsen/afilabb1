@@ -24,11 +24,11 @@ if (Meteor.isServer) {
             var response = Cats.find().fetch();
 
             // Races.insert({
-            //     race: "Siamese"
+            //     race: "Bengal"
             // })
 
             // Colors.insert({
-            //     color: "White"
+            //     color: "Black"
             // })
 
             this.response.setHeader('Content-Type', 'application/json');
@@ -49,11 +49,6 @@ if (Meteor.isServer) {
 
                 console.log("Name: ", this.request.body.name)
                 if(race !== undefined && color !== undefined) {
-                    response = {
-                        race,
-                        color
-                    }
-
                     Cats.insert({
                         name: this.request.body.name,
                         race: race._id,
@@ -82,8 +77,7 @@ if (Meteor.isServer) {
                             "error" : true,
                             "message" : "Color not found."
                         }
-                    }
-                    
+                    }   
                 }
             }
             this.response.setHeader('Content-Type', 'application/json');
@@ -114,19 +108,40 @@ if (Meteor.isServer) {
         .put(function(){
             var response;
             if(this.params.id !== undefined) {
-                var data = Cats.find({_id : this.params.id}).fetch();   
-                if(data.length > 0) {
-                    if(Cats.update({_id : data[0]._id},{$set : {name : this.request.body.name,race : this.request.body.race}}) === 1) {
-                        response = {
-                            "error" : false,
-                            "message" : "Cat information updated."
-                        }
-                    } else {
+                var data = Cats.findOne({_id : this.params.id});
+                if(data !== undefined) {
+                    race = Races.findOne({race : this.request.body.race})
+                    color = Colors.findOne({color : this.request.body.color})
+                    if(race == undefined && color == undefined) {
                         response = {
                             "error" : true,
-                            "message" : "Cat information not updated."
+                            "message" : "Race and Color not found."
                         }
                     }
+                    else if(race == undefined) {
+                        response = {
+                            "error" : true,
+                            "message" : "Race not found."
+                        }
+                    }
+                   else if(color == undefined){
+                        response = {
+                            "error" : true,
+                            "message" : "Color not found."
+                        }
+                    } else {
+                        if(Cats.update({_id : data._id},{$set : {name : this.request.body.name,race : race._id,color : color._id}}) === 1) {
+                            response = {
+                                "error" : false,
+                                "message" : "Cat information updated."
+                            }
+                        } else {
+                            response = {
+                                "error" : true,
+                                "message" : "Cat information not updated."
+                            }
+                        }
+                    }    
                 } else {
                     response = {
                         "error" : true,
