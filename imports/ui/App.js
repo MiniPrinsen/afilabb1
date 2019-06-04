@@ -57,8 +57,9 @@ class App extends Component {
 
     getData = () => {
        // Colors.findOne({})
-        console.log("DET HÄR ÄR KATTEN RAS VID SUBMIT: ", this.state.catSearch.catRace);
-        fetch(`http://localhost:3004/cats?race=${this.state.catSearch.catRace}`, {
+       var race = Races.findOne({race: this.state.catSearch.catRace});
+       console.log("Rasens id: ", race._id);
+        fetch(`http://localhost:3004/cats?race=${race}`, {
             method: 'GET',
             credentials: 'include',
         })
