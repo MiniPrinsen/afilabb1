@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Cat from './Cat.js';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Cats } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
 import  DbSearch  from './DbSearch.js';
 import CatTableHead from './CatTableHead.js';
+import { Cats, Races, Colors } from '../api/cats.js';
  
 // App component - represents the whole app
 class App extends Component {
@@ -56,8 +56,9 @@ class App extends Component {
     }
 
     getData = () => {
+       // Colors.findOne({})
         console.log("DET HÄR ÄR KATTEN RAS VID SUBMIT: ", this.state.catSearch.catRace);
-        fetch(`http://localhost:3004/get?race=${this.state.catSearch.catRace}`, {
+        fetch(`http://localhost:3004/cats?race=${this.state.catSearch.catRace}`, {
             method: 'GET',
             credentials: 'include',
         })
@@ -74,6 +75,7 @@ class App extends Component {
                         cat_race: cat.race,
                     }
                 })
+                //console.log("Kattens RIKTIGA färg: ", Colors.findOne({color: this.state.catData.cat_color}));
                 console.log('Kattens namn: ', this.state.catData.cat_name);
                 console.log('Kattens ras: ', this.state.catData.cat_race);
                 console.log('Kattens färg: ', this.state.catData.cat_color);

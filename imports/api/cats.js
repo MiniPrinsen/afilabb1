@@ -1,12 +1,20 @@
 import { Mongo } from 'meteor/mongo';
  
 export const Cats = new Mongo.Collection('tbl_cats');
+export const Races = new Mongo.Collection('tbl_races');
+export const Colors = new Mongo.Collection('tbl_colors');
 
 Router.route('/');
 
 if (Meteor.isServer) {
     Meteor.publish('tbl_cats', function subsPublication() {
         return Cats.find();
+    });
+    Meteor.publish('tbl_races', function racesPublication() {
+        return Races.find();
+    });
+    Meteor.publish('tbl_colors', function colorsPublication() {
+        return Colors.find();
     });
 
     // GET /cats - returns all info from MongoDB collection.
@@ -21,16 +29,28 @@ if (Meteor.isServer) {
         // POST /cats - adds new info to MongoDB collection.
         .post(function(){
             var response;
-            if(this.request.body.name === undefined || this.request.body.race === undefined) {
+            if(this.request.body.name === undefined || this.request.body.race === undefined || this.request.body.color === undefined ) {
                 response = {
                     "error": true,
                     "messege" : "invalid data"
                 };
             } else {
+
+                var color = Colors.findOne({color: this.request.body.color})
+                var race = Races.findOne({race: this.request.body.race})
+                console.log("kattens färg: ", color._id);
+                console.log("kattens ras: ", race._id);
+        
                 Cats.insert({
                     name: this.request.body.name,
-                    race: this.request.body.race
-                });
+                    race: race._id,
+                    color: color._id,
+                    createdAt: this.request.body.createdAt,
+                })
+                // Cats.insert({
+                //     name: this.request.body.name,
+                //     race: this.request.body.race
+                // });
                 response = {
                     "error" : false,
                     "message" : "Cat added."
