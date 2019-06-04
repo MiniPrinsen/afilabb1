@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Task from './Task.js';
+import Cat from './Cat.js';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Tasks } from '../api/tasks.js';
+import { Cats } from '../api/cats.js';
 import ReactDOM from 'react-dom';
  
 // App component - represents the whole app
@@ -21,7 +21,7 @@ class App extends Component {
         // Find the text field via the React ref
         const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
      
-        Tasks.insert({
+        Cats.insert({
           text,
           createdAt: new Date(), // current time
         });
@@ -29,11 +29,11 @@ class App extends Component {
         // Clear form
         ReactDOM.findDOMNode(this.refs.textInput).value = '';
     }
-//   getTasks() {
+//   getCats() {
 //     return [
-//       { _id: 1, text: 'This is task 1' },
-//       { _id: 2, text: 'This is task 2' },
-//       { _id: 3, text: 'This is task 3' },
+//       { _id: 1, text: 'This is cat 1' },
+//       { _id: 2, text: 'This is cat 2' },
+//       { _id: 3, text: 'This is cat 3' },
 //     ];
 //   }
 
@@ -43,13 +43,13 @@ class App extends Component {
         });
     }
     
-    renderTasks() {
-        let filteredTasks = this.props.tasks;
+    renderCats() {
+        let filteredCats = this.props.cats;
         if (this.state.hideCompleted) {
-            filteredTasks = filteredTasks.filter(task => !task.checked);
+            filteredCats = filteredCats.filter(cat => !cat.checked);
         }
-        return filteredTasks.map((task) => (
-                <Task key={task._id} task={task} />
+        return filteredCats.map((cat) => (
+                <Cat key={cat._id} cat={cat} />
             ));
     }
     
@@ -66,30 +66,30 @@ class App extends Component {
                 checked={this.state.hideCompleted}
                 onClick={this.toggleHideCompleted.bind(this)}
                 />
-                Hide Completed Tasks
+                Hide Completed Cats
             </label>
 
 
-            <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
+            <form className="new-cat" onSubmit={this.handleSubmit.bind(this)} >
                 <input
                 type="text"
                 ref="textInput"
-                placeholder="Type to add new tasks"
+                placeholder="Type to add new cats"
                 />
             </form>
             </header>
     
             <ul>
-            {this.renderTasks()}
+            {this.renderCats()}
             </ul>
         </div>
         );
     }
 }
 export default withTracker(() => {
-    Meteor.subscribe('tbl_annonsorer');
+    Meteor.subscribe('tbl_cats');
     return {
-      tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
-      incompleteCount: Tasks.find({ checked: { $ne: true } }).count(),
+      cats: Cats.find({}, { sort: { createdAt: -1 } }).fetch(),
+      incompleteCount: Cats.find({ checked: { $ne: true } }).count(),
     };
   })(App);
