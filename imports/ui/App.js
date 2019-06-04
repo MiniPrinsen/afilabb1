@@ -1,18 +1,34 @@
 import React, { Component } from 'react';
 import Task from './Task.js';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Tasks } from '../api/tasks.js';
+import { Cats } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
+import  DbSearch  from './DbSearch.js';
+import CatTableHead from './CatTableHead.js';
  
 // App component - represents the whole app
 class App extends Component {
 
+    state = {
+        hideCompleted: true,
+        showTable: false,
+
+        catData: {
+            catSearch: '',
+            cat_name: '',
+            cat_race: '',
+            cat_color: '',
+        }
+    }
+
     constructor(props) {
         super(props);
      
-        this.state = {
-          hideCompleted: false,
-        };
+        // this.state = {
+        //   hideCompleted: true,
+         
+         
+        // };
     }
 
     handleSubmit(event) {
@@ -29,13 +45,46 @@ class App extends Component {
         // Clear form
         ReactDOM.findDOMNode(this.refs.textInput).value = '';
     }
-//   getTasks() {
-//     return [
-//       { _id: 1, text: 'This is task 1' },
-//       { _id: 2, text: 'This is task 2' },
-//       { _id: 3, text: 'This is task 3' },
-//     ];
-//   }
+
+    handleInputChange = (form, event) => {
+        this.setState({
+            [form]: {
+                ...this.state[form],
+                [event.target.name]: event.target.value,
+            } 
+        }, () => {console.log(this.state[form])})
+    }
+
+    getData = () => {
+        console.log("DET HÄR ÄR KATTEN RAS VID SUBMIT: ", this.state.catSearch.catRace);
+        fetch(`http://localhost:3004/get?race=${this.state.catSearch.catRace}`, {
+            method: 'GET',
+            credentials: 'include',
+        })
+        .then(res => res.json()
+        .then(json => {
+            if(json != '') {
+            json.map(cat => {
+                this.setState({
+                    showTable: true,
+
+                    catData: {
+                        cat_name: cat.name,
+                        cat_color: cat.color,
+                        cat_race: cat.race,
+                    }
+                })
+                console.log('Kattens namn: ', this.state.catData.cat_name);
+                console.log('Kattens ras: ', this.state.catData.cat_race);
+                console.log('Kattens färg: ', this.state.catData.cat_color);
+
+            }) 
+        } else {
+            alert("Prenumerationsnumret finns inte registrerat i systemet.")
+        }
+        }))
+        .catch(err => console.log(err))
+    }
 
     toggleHideCompleted() {
         this.setState({
@@ -43,15 +92,15 @@ class App extends Component {
         });
     }
     
-    renderTasks() {
-        let filteredTasks = this.props.tasks;
-        if (this.state.hideCompleted) {
-            filteredTasks = filteredTasks.filter(task => !task.checked);
-        }
-        return filteredTasks.map((task) => (
-                <Task key={task._id} task={task} />
-            ));
-    }
+    // renderTasks() {
+    //     let filteredTasks = this.props.tasks;
+    //     if (this.state.hideCompleted) {
+    //         filteredTasks = filteredTasks.filter(task => !task.checked);
+    //     }
+    //     return filteredTasks.map((task) => (
+    //             <Cat key={task._id} task={task} />
+    //         ));
+    // }
     
     render() {
         return (
@@ -80,16 +129,26 @@ class App extends Component {
             </header>
     
             <ul>
-            {this.renderTasks()}
             </ul>
+        { this.state.hideCompleted && <DbSearch inputChange={this.handleInputChange} submitForm={this.getData} /> }
+        <table>
+            { this.state.showTable && < CatTableHead /> }   
+            <tbody>
+                {/* Show Cats */}
+                {/* { this.state.showAdTable && this.renderAds() } */}
+            </tbody>
+        </table>
+        {/* { <DbSearch inputChange={this.handleInputChange} submitForm={this.getData} /> } */}
         </div>
         );
     }
 }
 export default withTracker(() => {
-    Meteor.subscribe('tbl_annonsorer');
+    Meteor.subscribe('tbl_cats');
+    Meteor.subscribe('tbl_races');
+    Meteor.subscribe('tbl_colors');
     return {
-      tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
-      incompleteCount: Tasks.find({ checked: { $ne: true } }).count(),
+      cats: Cats.find({}, { sort: { createdAt: -1 } }).fetch(),
+      incompleteCount: Cats.find({ checked: { $ne: true } }).count(),
     };
   })(App);
