@@ -23,14 +23,6 @@ if (Meteor.isServer) {
         .get(function(){
             var response = Cats.find().fetch();
 
-            // Races.insert({
-            //     race: "Bengal"
-            // })
-
-            // Colors.insert({
-            //     color: "Black"
-            // })
-
             this.response.setHeader('Content-Type', 'application/json');
             this.response.end(JSON.stringify(response));
         })
@@ -84,13 +76,13 @@ if (Meteor.isServer) {
             this.response.end(JSON.stringify(response));
         });
 
-    Router.route('/cats/:race', {where: 'server'})
+    Router.route('/cats/:id', {where: 'server'})
 
         //GET /cats/:id - returns specific records
         .get(function(){
             var response;
-            if(this.params.race !== undefined) {
-                var data = Cats.find({race : this.params.race}).fetch();
+            if(this.params.id !== undefined) {
+                var data = Cats.find({_id : this.params.id}).fetch();
                 if(data.length > 0) {
                     response = data
                 } else {
@@ -109,39 +101,32 @@ if (Meteor.isServer) {
             var response;
             if(this.params.id !== undefined) {
                 var data = Cats.findOne({_id : this.params.id});
+
                 if(data !== undefined) {
                     race = Races.findOne({race : this.request.body.race})
                     color = Colors.findOne({color : this.request.body.color})
-                    if(race == undefined && color == undefined) {
-                        response = {
-                            "error" : true,
-                            "message" : "Race and Color not found."
-                        }
+
+                    if(race == undefined) {
+                        Races.insert({race: this.request.body.race})
+                        race = Races.findOne({race : this.request.body.race})
                     }
-                    else if(race == undefined) {
-                        response = {
-                            "error" : true,
-                            "message" : "Race not found."
-                        }
+                    if(color == undefined){
+                        Colors.insert({color: this.request.body.color})
+                        color = Colors.findOne({color : this.request.body.color})
                     }
-                   else if(color == undefined){
+                    if(Cats.update({_id : data._id},{$set : {name : this.request.body.name,race : race._id,color : color._id}}) === 1) {
                         response = {
-                            "error" : true,
-                            "message" : "Color not found."
+                            "error" : false,
+                            "message" : "Cat information updated."
                         }
                     } else {
-                        if(Cats.update({_id : data._id},{$set : {name : this.request.body.name,race : race._id,color : color._id}}) === 1) {
-                            response = {
-                                "error" : false,
-                                "message" : "Cat information updated."
-                            }
-                        } else {
-                            response = {
-                                "error" : true,
-                                "message" : "Cat information not updated."
-                            }
+                        response = {
+                            "error" : true,
+                            "message" : "Cat information not updated."
                         }
-                    }    
+                    } 
+                    console.log("data: ", data)
+                    
                 } else {
                     response = {
                         "error" : true,
@@ -153,7 +138,7 @@ if (Meteor.isServer) {
             this.response.end(JSON.stringify(response));
         })
 
-        //DELETE /message/:id delete specific record.
+        //DELETE /cats/:id delete specific record.
 
         .delete(function(){
             var response;
@@ -181,6 +166,26 @@ if (Meteor.isServer) {
             this.response.setHeader('Content-Type','application/json');
             this.response.end(JSON.stringify(response));
         });
+
+        Router.route('/cats/getrace/:race', {where: 'server'})
+
+        //GET /cats/getrace/:race - returns specific records
+        .get(function(){
+            var response;
+            if(this.params.race !== undefined) {
+                var data = Cats.find({race : this.params.race}).fetch();
+                if(data.length > 0) {
+                    response = data
+                } else {
+                    response = {
+                        "error" : true,
+                        "message" : "Cat with that race not found."
+                    }
+                }
+            }
+            this.response.setHeader('Content-Type','application/json');
+            this.response.end(JSON.stringify(response));
+        })
 
         // Router.route('/cats/:race', {where: 'server'})
 

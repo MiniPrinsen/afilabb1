@@ -61,7 +61,7 @@ class App extends Component {
 
        if(race !== undefined) {
     //    console.log("Rasens id: ", race._id);
-        fetch(`http://localhost:3004/cats/${race._id}`, {
+        fetch(`http://localhost:3000/cats/getrace/${race._id}`, {
             method: 'GET',
             credentials: 'include',
         })
