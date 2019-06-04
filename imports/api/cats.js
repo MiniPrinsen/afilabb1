@@ -90,13 +90,13 @@ if (Meteor.isServer) {
             this.response.end(JSON.stringify(response));
         });
 
-    Router.route('/cats/:id', {where: 'server'})
+    Router.route('/cats/:race', {where: 'server'})
 
         //GET /cats/:id - returns specific records
         .get(function(){
             var response;
-            if(this.params.id !== undefined) {
-                var data = Cats.find({_id : this.params.id}).fetch();
+            if(this.params.race !== undefined) {
+                var data = Cats.find({race : this.params.race}).fetch();
                 if(data.length > 0) {
                     response = data
                 } else {
@@ -166,6 +166,26 @@ if (Meteor.isServer) {
             this.response.setHeader('Content-Type','application/json');
             this.response.end(JSON.stringify(response));
         });
+
+        // Router.route('/cats/:race', {where: 'server'})
+
+        // //GET /cats/:id - returns specific records
+        // .get(function(){
+        //     var response;
+        //     if(this.params.race !== undefined) {
+        //         var data = Cats.find({race : this.params.race}).fetch();
+        //         if(data.length > 0) {
+        //             response = data
+        //         } else {
+        //             response = {
+        //                 "error" : true,
+        //                 "message" : "Cat not found."
+        //             }
+        //         }
+        //     }
+        //     this.response.setHeader('Content-Type','application/json');
+        //     this.response.end(JSON.stringify(response));
+        // })
 
 
     // Router.route('/get', {where: 'server'})

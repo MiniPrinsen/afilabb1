@@ -1,39 +1,28 @@
-import React, { Component } from 'react';
- 
-import { Cats } from '../api/cats.js';
-// Cat component - represents a single todo item
-export default class Cat extends Component {
+import React from 'react';
 
-    toggleChecked() {
-        // Set the checked property to the opposite of its current value
-        Cats.update(this.props.cat._id, {
-          $set: { checked: !this.props.cat.checked },
-        });
-      }
-     
-      deleteThisCat() {
-        Cats.remove(this.props.cat._id);
-      }
-  render() {
-    // Give cats a different className when they are checked off,
-    // so that we can style them nicely in CSS
-    const catClassName = this.props.cat.checked ? 'checked' : '';
- 
+import { withStyles } from '@material-ui/core/styles';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+
+const CustomTableCell = withStyles(theme => ({
+    head: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+  }))(TableCell);
+
+const Cat = (props) => {
     return (
-      <li className={catClassName}>
-        <button className="delete" onClick={this.deleteThisCat.bind(this)}>
-          &times;
-        </button>
- 
-        <input
-          type="checkbox"
-          readOnly
-          checked={!!this.props.cat.checked}
-          onClick={this.toggleChecked.bind(this)}
-        />
- 
-        <span className="text">{this.props.cat.text}</span>
-      </li>
-    );
-  }
+        <React.Fragment>
+            <TableRow>
+              <CustomTableCell component="th" scope="row">{props.cat.cat_name}</CustomTableCell>
+              <CustomTableCell align="right">{props.cat.cat_race}</CustomTableCell>
+              <CustomTableCell align="right">{props.cat.cat_color}</CustomTableCell>
+            </TableRow>
+        </React.Fragment>
+    )
 }
+export default Cat

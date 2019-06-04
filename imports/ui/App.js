@@ -58,13 +58,14 @@ class App extends Component {
     getData = () => {
        // Colors.findOne({})
        var race = Races.findOne({race: this.state.catSearch.catRace});
-       console.log("Rasens id: ", race._id);
-        fetch(`http://localhost:3004/cats?race=${race}`, {
+    //    console.log("Rasens id: ", race._id);
+        fetch(`http://localhost:3004/cats/${race._id}`, {
             method: 'GET',
             credentials: 'include',
         })
         .then(res => res.json()
         .then(json => {
+            console.log("JSON: ", json)
             if(json != '') {
             json.map(cat => {
                 this.setState({
@@ -93,6 +94,13 @@ class App extends Component {
         this.setState({
         hideCompleted: !this.state.hideCompleted,
         });
+    }
+
+    renderCats = () => {
+        return this.props.cats.map((cat) => (
+            <Cat key={cat._id} cat={cat}/>
+        ));
+        
     }
     
     render() {
@@ -128,7 +136,7 @@ class App extends Component {
             { this.state.showTable && < CatTableHead /> }   
             <tbody>
                 {/* Show Cats */}
-                {/* { this.state.showAdTable && this.renderAds() } */}
+                { this.state.showTable && this.renderCats() }
             </tbody>
         </table>
         {/* { <DbSearch inputChange={this.handleInputChange} submitForm={this.getData} /> } */}
