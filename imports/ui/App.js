@@ -55,9 +55,11 @@ class App extends Component {
         }, () => {console.log(this.state[form])})
     }
 
-    getData = () => {
+    getRace = () => {
        // Colors.findOne({})
        var race = Races.findOne({race: this.state.catSearch.catRace});
+
+       if(race !== undefined) {
     //    console.log("Rasens id: ", race._id);
         fetch(`http://localhost:3004/cats/${race._id}`, {
             method: 'GET',
@@ -84,10 +86,14 @@ class App extends Component {
 
             }) 
         } else {
-            alert("Prenumerationsnumret finns inte registrerat i systemet.")
+            alert("A cat with that race is not in the database.")
         }
         }))
         .catch(err => console.log(err))
+        }
+        else {
+            alert("A cat with that race is not in the database.")
+        }
     }
 
     toggleHideCompleted() {
@@ -108,30 +114,11 @@ class App extends Component {
         <div className="container">
             <header>
             <h1>Todo List ({this.props.incompleteCount})</h1>
-
-            <label className="hide-completed">
-                <input
-                type="checkbox"
-                readOnly
-                checked={this.state.hideCompleted}
-                onClick={this.toggleHideCompleted.bind(this)}
-                />
-                Hide Completed Cats
-            </label>
-
-
-            <form className="new-cat" onSubmit={this.handleSubmit.bind(this)} >
-                <input
-                type="text"
-                ref="textInput"
-                placeholder="Type to add new cats"
-                />
-            </form>
             </header>
     
             <ul>
             </ul>
-        { this.state.hideCompleted && <DbSearch inputChange={this.handleInputChange} submitForm={this.getData} /> }
+        { this.state.hideCompleted && <DbSearch inputChange={this.handleInputChange} submitForm={this.getRace} /> }
         <table>
             { this.state.showTable && < CatTableHead /> }   
             <tbody>
@@ -149,7 +136,6 @@ export default withTracker(() => {
     Meteor.subscribe('tbl_races');
     Meteor.subscribe('tbl_colors');
     return {
-      cats: Cats.find({}, { sort: { createdAt: -1 } }).fetch(),
-      incompleteCount: Cats.find({ checked: { $ne: true } }).count(),
+        cats: Cats.find({}).fetch(),
     };
   })(App);
