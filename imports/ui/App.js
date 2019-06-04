@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Task from './Task.js';
+import Cat from './Cat.js';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Cats } from '../api/tasks.js';
 import ReactDOM from 'react-dom';
@@ -37,7 +37,7 @@ class App extends Component {
         // Find the text field via the React ref
         const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
      
-        Tasks.insert({
+        Cats.insert({
           text,
           createdAt: new Date(), // current time
         });
@@ -92,16 +92,6 @@ class App extends Component {
         });
     }
     
-    // renderTasks() {
-    //     let filteredTasks = this.props.tasks;
-    //     if (this.state.hideCompleted) {
-    //         filteredTasks = filteredTasks.filter(task => !task.checked);
-    //     }
-    //     return filteredTasks.map((task) => (
-    //             <Cat key={task._id} task={task} />
-    //         ));
-    // }
-    
     render() {
         return (
         <div className="container">
@@ -115,15 +105,15 @@ class App extends Component {
                 checked={this.state.hideCompleted}
                 onClick={this.toggleHideCompleted.bind(this)}
                 />
-                Hide Completed Tasks
+                Hide Completed Cats
             </label>
 
 
-            <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
+            <form className="new-cat" onSubmit={this.handleSubmit.bind(this)} >
                 <input
                 type="text"
                 ref="textInput"
-                placeholder="Type to add new tasks"
+                placeholder="Type to add new cats"
                 />
             </form>
             </header>
