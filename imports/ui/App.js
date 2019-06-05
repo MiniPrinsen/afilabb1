@@ -47,7 +47,7 @@ class App extends Component {
 
        if(race !== undefined) {
     //    console.log("Rasens id: ", race._id);
-        fetch(`http://localhost:3004/cats/getrace/${race._id}`, {
+        fetch(`http://localhost:3000/cats/getrace/${race._id}`, {
             method: 'GET',
             credentials: 'include',
         })
@@ -70,7 +70,10 @@ class App extends Component {
                 console.log('Kattens namn: ', this.state.catData.cat_name);
                 console.log('Kattens ras: ', this.state.catData.cat_race);
                 console.log('Kattens färg: ', this.state.catData.cat_color);
-
+                
+                return this.props.cats.map((cat) => (
+                    <Cat key={cat._id} cat={cat}/>
+                ));
             }) 
         } else {
             alert("A cat with that race is not in the database.")
