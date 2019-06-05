@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-const DbSearch = ({submitForm, inputChange}) => {
+const DbSearch = ({submitForm, inputChange, renderCats}) => {
     return (
         <React.Fragment>     
             <label>
@@ -13,7 +13,7 @@ const DbSearch = ({submitForm, inputChange}) => {
                 className="sub-search" 
                 onChange={(event) => inputChange('catSearch', event)} 
                 />
-                <button onClick={submitForm}>Sök</button>
+                <button onClick={() => submitForm().then(renderCats)}>Sök</button>
             </label>
             
         </React.Fragment>

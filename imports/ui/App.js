@@ -12,14 +12,7 @@ class App extends Component {
     state = {
         hideCompleted: true,
         showTable: false,
-
-        catData: {
-            catSearch: '',
-            cat_id: '',
-            cat_name: '',
-            cat_race: '',
-            cat_color: '',
-        }
+        catList: []
     }
 
     constructor(props) {
@@ -41,75 +34,76 @@ class App extends Component {
         }, () => {console.log(this.state[form])})
     }
 
-    getRace = () => {
-       // Colors.findOne({})
-       var race = Races.findOne({race: this.state.catSearch.catRace});
+    getRace = () => { 
+        return new Promise((resolve, reject) => {
+            // Colors.findOne({})
+            var race = Races.findOne({race: this.state.catSearch.catRace});
 
-       if(race !== undefined) {
-    //    console.log("Rasens id: ", race._id);
-        fetch(`http://localhost:3004/cats/getrace/${race._id}`, {
-            method: 'GET',
-            credentials: 'include',
+            if(race !== undefined) {
+            //    console.log("Rasens id: ", race._id);
+            fetch(`http://localhost:3004/cats/getrace/${race._id}`, {
+                method: 'GET',
+                credentials: 'include',
+            })
+            .then(res => res.json()
+            .then(json => {
+                if(json != '') {
+                    json.map(cat => {
+                        this.setState({
+                            catData: {
+                                cat_id: cat._id,
+                                cat_name: cat.name,
+                                cat_color: cat.color,
+                                cat_race: cat.race,
+                            }
+                        }, () => resolve())
+                }) 
+            } else {
+                alert("A cat with that race is not in the database.")
+            }
+            }))
+            .catch(err => {reject(err)})
+            }
+            else {
+                alert("A cat with that race is not in the database.")
+            }
         })
-        .then(res => res.json()
-        .then(json => {
-            console.log("JSON: ", json)
-            if(json != '') {
-            json.map(cat => {
-                this.setState({
-                    showTable: true,
-
-                    catData: {
-                        cat_id: cat._id,
-                        cat_name: cat.name,
-                        cat_color: cat.color,
-                        cat_race: cat.race,
-                    }
-                })
-                //console.log("Kattens RIKTIGA färg: ", Colors.findOne({color: this.state.catData.cat_color}));
-                console.log('Kattens namn: ', this.state.catData.cat_name);
-                console.log('Kattens ras: ', this.state.catData.cat_race);
-                console.log('Kattens färg: ', this.state.catData.cat_color);
-
-            }) 
-        } else {
-            alert("A cat with that race is not in the database.")
-        }
-        }))
-        .catch(err => console.log(err))
-        }
-        else {
-            alert("A cat with that race is not in the database.")
-        }
+       
     }
 
     toggleHideCompleted() {
         this.setState({
-        hideCompleted: !this.state.hideCompleted,
+            hideCompleted: !this.state.hideCompleted,
         });
     }
 
     renderCats = () => {
-        return this.props.cats.map((cat) => (
-            <Cat key={cat._id} cat={cat}/>
-        ));   
+        let catList = []
+        Cats.find({race: this.state.catData.cat_race}).forEach(function(singleDoc) {
+            catList.push(singleDoc)
+        })
+        this.setState({
+            showTable: true,
+            catList: catList
+        }, () => {console.log(this.state.catList)})
     }
     
     render() {
         return (
         <div className="container">
             <header>
-            <h1>Todo List ({this.props.incompleteCount})</h1>
+            <h1>Kattraser</h1>
             </header>
     
             <ul>
             </ul>
-        { this.state.hideCompleted && <DbSearch inputChange={this.handleInputChange} submitForm={this.getRace} /> }
+        { this.state.hideCompleted && <DbSearch renderCats={this.renderCats} inputChange={this.handleInputChange} submitForm={this.getRace} /> }
         <table>
             { this.state.showTable && < CatTableHead /> }   
             <tbody>
                 {/* Show Cats */}
-                { this.state.showTable && this.renderCats() }
+                { this.state.showTable && 
+                    this.state.catList.map(cat => <Cat key={cat._id} cat={cat}/>)}
             </tbody>
         </table>
         {/* { <DbSearch inputChange={this.handleInputChange} submitForm={this.getData} /> } */}
