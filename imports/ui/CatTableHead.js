@@ -7,13 +7,6 @@ import TableRow from '@material-ui/core/TableRow';
 
 const CatTableHead = () => {
     const CustomTableCell = withStyles(theme => ({
-        // head: {
-        //     // backgroundColor: theme.palette.common.black,
-        //     color: theme.palette.common.black,
-        // },
-        // // body: {
-        // //     fontSize: 2em,
-        // // },
         }))(TableCell);
     return (
         <React.Fragment>

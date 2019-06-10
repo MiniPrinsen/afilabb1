@@ -17,9 +17,9 @@ if (Meteor.isServer) {
         return Colors.find();
     });
 
-    // GET /cats - returns all info from MongoDB collection.
-
     Router.route('/cats',{where: 'server'})
+
+        // GET /cats - returns all info from MongoDB collection.
         .get(function(){
             var response = Cats.find().fetch();
 
@@ -30,16 +30,17 @@ if (Meteor.isServer) {
         // POST /cats - adds new info to MongoDB collection.
         .post(function(){
             var response;
-            if(this.request.body.name === undefined || this.request.body.race === undefined || this.request.body.color === undefined ) {
+            if(this.request.body.name === undefined || 
+                this.request.body.race === undefined || 
+                this.request.body.color === undefined ) {
                 response = {
                     "error": true,
-                    "messege" : "invalid data"
+                    "message" : "invalid data"
                 }
             } else {
                 var race = Races.findOne({race : this.request.body.race});
                 var color = Colors.findOne({color : this.request.body.color});
 
-                console.log("Name: ", this.request.body.name)
                 if(race !== undefined && color !== undefined) {
                     Cats.insert({
                         name: this.request.body.name,
@@ -125,8 +126,6 @@ if (Meteor.isServer) {
                             "message" : "Cat information not updated."
                         }
                     } 
-                    console.log("data: ", data)
-                    
                 } else {
                     response = {
                         "error" : true,
@@ -186,94 +185,4 @@ if (Meteor.isServer) {
             this.response.setHeader('Content-Type','application/json');
             this.response.end(JSON.stringify(response));
         })
-
-        // Router.route('/cats/:race', {where: 'server'})
-
-        // //GET /cats/:id - returns specific records
-        // .get(function(){
-        //     var response;
-        //     if(this.params.race !== undefined) {
-        //         var data = Cats.find({race : this.params.race}).fetch();
-        //         if(data.length > 0) {
-        //             response = data
-        //         } else {
-        //             response = {
-        //                 "error" : true,
-        //                 "message" : "Cat not found."
-        //             }
-        //         }
-        //     }
-        //     this.response.setHeader('Content-Type','application/json');
-        //     this.response.end(JSON.stringify(response));
-        // })
-
-
-    // Router.route('/get', {where: 'server'})
-    // .get(function(){
-    //     var data = this.params.query.text;
-    //     var res = Cats.find({text: data}).fetch()
-    //     this.response.statusCode = 200;
-    //     this.response.setHeader("Access-Control-Allow-Origin", "http://localhost:3004");
-    //     this.response.setHeader("Access-Control-Allow-Credentials", "true");
-    //     this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //     this.response.end(JSON.stringify(res));
-    // })
-
-    // Router.route('/post', {where: 'server'})
-    // .post(function(){
-    //     console.log(this.request.body);
-
-    //     Cats.insert({
-    //         text: this.request.body.text,
-    //         createdAt: this.request.body.createdAt,
-    //         test: this.request.body.test,
-    //     })
-
-    //     this.response.statusCode = 200;
-    //     this.response.setHeader("Access-Control-Allow-Origin", "http://localhost:3004");
-    //     this.response.setHeader("Access-Control-Allow-Credentials", "true");
-    //     this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //     this.response.end(JSON.stringify("Success"));
-    // })
-    // Router.route('/put', {where: 'server'})
-    // .put(function(){
-
-    //     console.log("/PUT HEYOOOO");
-    //     console.log("/POST HEYOOOO");
-    //     var data = this.params.query.text;
-    //     console.log("PUT: ", data);
-
-    //     try {
-    //         Cats.find({text: data}).forEach(function(singleDoc) {
-    //             var searchId = singleDoc._id
-    //             console.log("ID of the document: ", searchId);
-    //             Cats.update({_id: searchId}, { $set: { createdAt: new Date() } })
-    //         })  
-    //     } catch(e) {
-    //             console.log("error: ", e);
-    //         }
-    //     this.response.statusCode = 200;
-    //     this.response.setHeader("Access-Control-Allow-Origin", "http://localhost:3004");
-    //     this.response.setHeader("Access-Control-Allow-Credentials", "true");
-    //     this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //     this.response.end(JSON.stringify("Hey from put"));
-    // })
-    // Router.route('/delete', {where: 'server'})
-    // .delete(function(){
-    //     var data = this.params.query.text;
-    //     try {
-    //         Cats.find({text: data}).forEach(function(singleDoc) {
-    //             var searchId = singleDoc._id
-    //             console.log("ID of the document: ", searchId);
-    //             Cats.remove({_id: searchId})
-    //         })  
-    //     } catch(e) {
-    //             console.log("error: ", e);
-    //         }
-    //     this.response.statusCode = 200;
-    //     this.response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-    //     this.response.setHeader("Access-Control-Allow-Credentials", "true");
-    //     this.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //     this.response.end(JSON.stringify("Hey from delete"));
-    // })
 }
